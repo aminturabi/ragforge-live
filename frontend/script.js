@@ -85,12 +85,34 @@ document.addEventListener('DOMContentLoaded', () => {
         // Restore active index if it exists in local storage
         if (state.activeCollection && state.activeFilename) {
             updateActiveIndexUI(true);
+            verifyStoredCollection();
         } else {
             updateActiveIndexUI(false);
         }
 
         setupEventListeners();
         checkServerConfig();
+    };
+
+    // The server's storage is wiped when it restarts/redeploys, but the browser
+    // remembers the last document - if the server no longer has it, reset honestly
+    // instead of letting every question fail with "no matches".
+    const verifyStoredCollection = () => {
+        fetch('/api/collections')
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.success && Array.isArray(data.collections) && state.activeCollection && !data.collections.includes(state.activeCollection)) {
+                    state.activeCollection = null;
+                    state.activeFilename = null;
+                    state.activeChunksCount = 0;
+                    localStorage.removeItem('ragforge_collection');
+                    localStorage.removeItem('ragforge_filename');
+                    localStorage.removeItem('ragforge_chunks');
+                    updateActiveIndexUI(false);
+                    appendAlertMessage('system', 'The server restarted and cleared the previously uploaded document. Please upload it again to keep asking questions.', 'warning');
+                }
+            })
+            .catch(() => { /* if the check itself fails, leave the restored state as-is */ });
     };
 
     // If the server has its own Groq key, say so - visitors can chat with no key of their own
