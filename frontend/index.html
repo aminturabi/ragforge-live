@@ -52,6 +52,7 @@
                             </button>
                         </div>
                         <p class="helper-text">Free at console.groq.com/keys. Stored only in your browser, sent only with your questions. Or the server can use its own key instead.</p>
+                        <div class="api-status" id="apiStatus" hidden></div>
                     </div>
                 </div>
 
@@ -185,17 +186,21 @@
         window.onerror = function(message, source, lineno, colno, error) {
             const banner = document.createElement('div');
             banner.style.position = 'fixed';
-            banner.style.top = '0';
-            banner.style.left = '0';
-            banner.style.width = '100%';
-            banner.style.backgroundColor = '#ef4444';
+            banner.style.bottom = '16px';
+            banner.style.right = '16px';
+            banner.style.left = 'auto';
+            banner.style.width = 'auto';
+            banner.style.maxWidth = 'min(420px, 90vw)';
+            banner.style.backgroundColor = '#7f1d1d';
             banner.style.color = 'white';
-            banner.style.padding = '14px 24px';
+            banner.style.padding = '10px 14px';
+            banner.style.borderRadius = '12px';
             banner.style.zIndex = '999999';
             banner.style.fontFamily = 'monospace';
-            banner.style.fontSize = '13px';
+            banner.style.fontSize = '12px';
             banner.style.boxShadow = '0 4px 16px rgba(0,0,0,0.5)';
-            banner.innerHTML = `<strong>JS Error:</strong> ${message} <span style="opacity: 0.8; font-size:11px;">at ${source}:${lineno}:${colno}</span>`;
+            banner.innerHTML = `<strong>Something went wrong:</strong> ${message}`;
+            setTimeout(() => banner.remove(), 6000);
             
             const closeBtn = document.createElement('button');
             closeBtn.textContent = '✕';

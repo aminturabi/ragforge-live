@@ -15,6 +15,12 @@ def _service():
     return current_app.config["RAG_SERVICE"]
 
 
+@api_bp.route("/config", methods=["GET"])
+def client_config():
+    """Tell the frontend whether the server has its own Groq key configured."""
+    return jsonify({"success": True, "default_key": bool(os.environ.get("GROQ_API_KEY"))})
+
+
 @api_bp.route("/upload", methods=["POST"])
 def upload_file():
     if "file" not in request.files:

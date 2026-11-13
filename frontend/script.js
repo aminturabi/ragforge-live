@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const elements = {
         // Configurations
         apiKeyInput: document.getElementById('apiKey'),
+        apiStatus: document.getElementById('apiStatus'),
         togglePasswordBtn: document.getElementById('togglePasswordBtn'),
         eyeIcon: document.getElementById('eyeIcon'),
         topKSlider: document.getElementById('topK'),
@@ -89,6 +90,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         setupEventListeners();
+        checkServerConfig();
+    };
+
+    // If the server has its own Groq key, say so - visitors can chat with no key of their own
+    const checkServerConfig = () => {
+        fetch('/api/config')
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.default_key) {
+                    state.serverKey = true;
+                    if (elements.apiStatus) {
+                        elements.apiStatus.hidden = false;
+                        elements.apiStatus.innerHTML = '<span class="api-status-dot"></span><span>Demo Groq key active on the server - no key needed. Your own key below overrides it.</span>';
+                    }
+                    if (elements.apiKeyInput) {
+                        elements.apiKeyInput.placeholder = 'Optional - your own Groq key';
+                    }
+                }
+            })
+            .catch(() => { /* server key status is a nicety, never block the app on it */ });
     };
 
     // -------------------------------------------------------------
