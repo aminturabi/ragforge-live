@@ -169,11 +169,27 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.clearIndexBtn.addEventListener('click', clearIndex);
 
         // Sidebar Toggle for Mobile
-        elements.sidebarToggle.addEventListener('click', () => {
+        const closeSidebar = () => elements.sidebar.classList.remove('open');
+        elements.sidebarToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
             elements.sidebar.classList.toggle('open');
-            const isOpen = elements.sidebar.classList.contains('open');
-            elements.sidebarToggle.querySelector('i').setAttribute('data-lucide', isOpen ? 'x' : 'menu');
-            safeCreateIcons();
+        });
+
+        // Close button inside the sidebar (mobile)
+        const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+        if (sidebarCloseBtn) {
+            sidebarCloseBtn.addEventListener('click', closeSidebar);
+        }
+
+        // Tap the chat area (outside the sidebar) to close it on mobile
+        const chatArea = document.querySelector('.chat-area');
+        if (chatArea) {
+            chatArea.addEventListener('click', () => {
+                if (window.innerWidth <= 820) closeSidebar();
+            });
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSidebar();
         });
 
         // Auto-grow textarea for chat query
