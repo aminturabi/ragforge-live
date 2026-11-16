@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
         topKSlider: document.getElementById('topK'),
         topKValue: document.getElementById('topKValue'),
         
+        serverKeyNote: document.getElementById('serverKeyNote'),
+
         // Upload
         dropzone: document.getElementById('dropzone'),
         fileInput: document.getElementById('fileInput'),
@@ -122,6 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data && data.default_key) {
                     state.serverKey = true;
+                    if (elements.serverKeyNote) {
+                        elements.serverKeyNote.hidden = false;
+                    }
                     if (elements.apiStatus) {
                         elements.apiStatus.hidden = false;
                         elements.apiStatus.innerHTML = '<span class="api-status-dot"></span><span>Demo Groq key active on the server - no key needed. Your own key below overrides it.</span>';
@@ -258,6 +263,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Close Drawer Panel
         elements.closeDrawerBtn.addEventListener('click', closeDrawer);
         elements.drawerOverlay.addEventListener('click', closeDrawer);
+
+        // Starter question chips (welcome screen): put the question into the
+        // chat input and, if a document is already active, send it through
+        // the normal chat flow. If no document is active yet, the text stays
+        // in the input ready to send after an upload.
+        document.querySelectorAll('.starter-chip').forEach((chip) => {
+            chip.addEventListener('click', () => {
+                const question = chip.getAttribute('data-question') || chip.textContent.trim();
+                if (!question) return;
+                elements.queryInput.value = question;
+                elements.queryInput.dispatchEvent(new Event('input', { bubbles: true }));
+                if (!elements.queryInput.disabled) {
+                    handleChatSubmit();
+                }
+            });
+        });
     };
 
     // -------------------------------------------------------------
@@ -512,7 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.addEventListener('click', () => openContextDrawer(msgId));
                 footer.appendChild(btn);
             } else {
-                footer.textContent = 'Generated from general LLM space (No doc matches)';
+                footer.textContent = 'No matching sections were found in your document for this question. Try rephrasing it, or upload a document that covers this topic.';
             }
             
             bubble.appendChild(footer);

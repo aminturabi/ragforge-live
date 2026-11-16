@@ -1453,3 +1453,147 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
         transform: none;
     }
 }
+
+/* --- Client product polish (2026-11-17) --- */
+/* Advanced settings: collapsed by default, normal clients do not need it */
+.advanced-settings {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-card);
+}
+.advanced-summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 12px 14px;
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.advanced-summary::-webkit-details-marker { display: none; }
+.advanced-summary::after {
+    content: "+";
+    margin-left: auto;
+    font-size: 1rem;
+    color: var(--color-text-muted);
+}
+.advanced-settings[open] .advanced-summary::after { content: "-"; }
+.advanced-summary:hover { color: var(--color-text-main); }
+.advanced-body {
+    padding: 4px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* "No key needed" note near the upload area (shown when the server key is active) */
+.no-key-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: #a7f3d0;
+}
+.no-key-note[hidden] { display: none; }
+.no-key-note .api-status-dot { margin-top: 4px; }
+
+/* Welcome: bot disclosure, sample try-out, starter chips */
+.bot-disclosure {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    padding: 7px 14px;
+    margin-bottom: 28px;
+    background: rgba(255, 255, 255, 0.03);
+}
+.sample-try {
+    margin-top: 32px;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-card);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.sample-try h3 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+}
+.sample-try p {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+.sample-download-btn i {
+    width: 14px;
+    height: 14px;
+}
+.starter-label {
+    margin-top: 6px;
+    font-weight: 600;
+    color: var(--color-text-main) !important;
+}
+.starter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+.starter-chip {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    padding: 7px 14px;
+    font-size: 0.82rem;
+    color: var(--color-text-main);
+    background: rgba(255, 255, 255, 0.03);
+    transition: var(--transition-fast);
+}
+.starter-chip:hover {
+    border-color: var(--border-color-active);
+    background: rgba(99, 102, 241, 0.12);
+}
+.human-help { margin-top: 6px; }
+
+/* Active document: labelled delete button wraps under the doc name on narrow sidebars */
+.active-doc-card { flex-wrap: wrap; }
+.delete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: normal;
+    text-align: left;
+    line-height: 1.3;
+}
+.delete-btn i {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* Sidebar footer links (Privacy / Talk to a human) */
+.footer-links {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+/* Accuracy disclaimer under the chat input */
+.disclaimer-text {
+    margin-top: 10px;
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+    text-align: center;
+}

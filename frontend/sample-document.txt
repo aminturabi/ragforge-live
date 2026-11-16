@@ -1,0 +1,30 @@
+Bright Cuts Hair Salon - Information
+
+About us
+Bright Cuts is a friendly hair salon at 42 Maple Street, Springfield.
+You can call us on 555-0142 or email bookings@brightcuts.example
+
+Opening hours
+We are open Monday to Saturday from 9:00 AM to 7:00 PM.
+We are closed on Sundays.
+
+Services and prices
+- Haircut: $25
+- Kids haircut (under 12 years old): $15
+- Hair colouring: $60
+- Beard trim: $12
+
+On Tuesdays, senior citizens get a 10% discount on all services.
+
+How to book an appointment
+To book an appointment, call us on 555-0142, email bookings@brightcuts.example,
+or just walk in - walk-ins are welcome when a chair is free.
+Booking ahead is recommended on Saturdays, our busiest day.
+
+Cancelling or changing a booking
+You can cancel or change your appointment free of charge up to 3 hours before it starts.
+Just call us on 555-0142 and tell us your name and appointment time.
+
+Good to know
+We accept cash and card payments.
+Free Wi-Fi is available in the salon while you wait.
