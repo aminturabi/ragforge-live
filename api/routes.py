@@ -111,7 +111,8 @@ def list_collections():
 @api_bp.route("/admin-status", methods=["GET"])
 def admin_status():
     """Tell admin clients whether this server is password-protected."""
-    return jsonify({"success": True, "protected": _admin_key_required()})
+    persistent = bool(os.environ.get("SUPABASE_URL") and os.environ.get("SUPABASE_KEY"))
+    return jsonify({"success": True, "protected": _admin_key_required(), "persistent": persistent})
 
 
 @api_bp.route("/admin-verify", methods=["POST"])

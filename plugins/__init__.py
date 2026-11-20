@@ -17,6 +17,7 @@ def discover_plugins() -> None:
         "loaders.docx_loader",
         "embeddings.sentence_transformer",
         "vectorstores.chroma_store",
+        "vectorstores.supabase_store",
         "retrievers.vector_retriever",
         "retrievers.hybrid_retriever",
         "rerankers.noop_reranker",
