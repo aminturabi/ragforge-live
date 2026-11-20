@@ -26,6 +26,16 @@ function ok(name, fn) {
     assert.strictEqual(cfg.collection, "col_1");
   });
 
+  await ok("mergeConfig carries v2 welcome + suggestions defaults", () => {
+    const cfg = mergeConfig({ collection: "col_1", suggestions: ["What are your hours?"], welcomeHeading: "Hey!" });
+    assert.deepStrictEqual(cfg.suggestions, ["What are your hours?"]);
+    assert.strictEqual(cfg.welcomeHeading, "Hey!");
+    const plain = mergeConfig({ collection: "col_1" });
+    assert.deepStrictEqual(plain.suggestions, []);
+    assert.strictEqual(plain.welcomeHeading, "");
+    assert.strictEqual(plain.avatarText, "");
+  });
+
   await ok("expandFollowUp leaves standalone questions untouched", () => {
     const history = [{ role: "user", text: "What is the CBC price?" }];
     assert.strictEqual(expandFollowUp("When does the clinic open?", history), "When does the clinic open?");

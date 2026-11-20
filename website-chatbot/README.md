@@ -19,11 +19,53 @@ so the widget can live on a different domain than the API.
 
 ```
 widget/ragforge-chat.js   The whole chatbot: one self-contained JS file
+admin/serve_admin.py      One-command Admin Dashboard server (see below)
+admin/dashboard.js/.css   Dashboard logic + styles (owner console)
+admin/fetch_urls.py       Fetch website pages as text without browser CORS limits
 demo/serve_demo.py        One-command demo (sample clinic website)
 demo/sample-clinic.txt    Sample knowledge base used by the demo
 kb/merge_kb.py            Merge many .txt/.md files into one knowledge base
 tests/smoke.test.js       Node smoke tests for the widget logic + API client
+tests/admin-smoke.test.js Node smoke tests for the dashboard logic
 ```
+
+## Admin Dashboard (owner console)
+
+```bash
+python3 admin/serve_admin.py
+# open http://localhost:8100
+```
+
+A sidebar console where the website owner manages and trains the chatbot:
+
+- **Knowledge Base** - upload PDF/DOCX/TXT/CSV/MD/JSON files (each becomes a
+  backend collection), list, search, set active, delete.
+- **Publish** - composes Business Info + Services + Pricing + FAQs +
+  Website Content + Instructions + Support info into ONE document and
+  uploads it; the chatbot answers from it immediately. This is how manual
+  edits "train" the chatbot - no backend changes needed.
+- **FAQs / Website Content / Business & Pricing** - full add, edit, delete
+  with searchable tables. Website pages can be fetched in-browser (when
+  the site allows it) or pasted; `admin/fetch_urls.py` fetches without
+  browser restrictions.
+- **Instructions** - tone, custom instructions, fallback message and a
+  disclaimer, published inside the knowledge base document.
+- **Appearance** - title, welcome message, placeholder, theme colour and
+  position, with a live preview; applied through the Embed snippet.
+- **Human Support** - WhatsApp/email handover details, published into the
+  knowledge base so the chatbot shares them on request.
+- **Conversations / Unanswered / Analytics** - a built-in test chat talks
+  to the real backend; test conversations are logged, fallback answers
+  are flagged as unanswered (fix loop: add FAQ -> publish -> retest), and
+  analytics (totals, popular questions, satisfaction from Helpful ratings)
+  are computed from that log.
+- **Settings** - backend URL, JSON export/import backup, erase. All
+  dashboard data is stored in the browser's localStorage.
+
+Honest scope: real *visitor* conversations and traffic analytics are not
+visible here, because the current backend keeps no query log. Adding a
+small logging endpoint to the backend is the planned next step; the
+dashboard's pages are already shaped to receive that data.
 
 ## Quick start (see it working in 2 minutes)
 
@@ -93,7 +135,10 @@ framework-free vanilla JS with zero dependencies.
 | `apiBase` | `""` (same origin) | Base URL of the RAGForge backend, no trailing slash |
 | `collection` | `""` | Knowledge-base `collection_name` from Step 1 (required) |
 | `title` / `subtitle` | "Chat with us" | Header text |
-| `welcomeMessage` | generic greeting | First assistant message |
+| `welcomeHeading` | `""` (= title) | Big heading on the welcome screen |
+| `welcomeMessage` | generic greeting | Welcome-screen text under the heading |
+| `suggestions` | `[]` | Starter questions shown as tappable chips on the welcome screen |
+| `avatarText` | `""` (= spark icon) | Initials shown in the header/welcome avatar |
 | `placeholder` | "Type your question..." | Input hint |
 | `primaryColor` | `#0f766e` | Header, launcher and user bubbles |
 | `position` | `"right"` | `"left"` moves the bubble to the left |

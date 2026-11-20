@@ -137,7 +137,14 @@ PAGE = """<!DOCTYPE html>
     collection: savedCollection || "",
     title: "CityCare Clinic",
     subtitle: "Ask about services, fees and timings",
+    welcomeHeading: "CityCare Clinic",
     welcomeMessage: "Assalam-o-Alaikum! Ask me about our doctors, fees, test prices or timings.",
+    suggestions: [
+      "What are your opening hours?",
+      "When does the gynecologist sit?",
+      "What is the CBC test price?",
+      "How can I book an appointment?"
+    ],
     placeholder: "e.g. What is the CBC test price?",
     primaryColor: "#0f766e"
   };
