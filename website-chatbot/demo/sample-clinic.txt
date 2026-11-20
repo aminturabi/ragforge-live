@@ -1,0 +1,54 @@
+CityCare Clinic - Patient Information
+
+ABOUT THE CLINIC
+CityCare Clinic is a multi-specialty clinic located on Shamsi Road, Mardan, Khyber Pakhtunkhwa, Pakistan.
+Opening hours: Monday to Saturday, 9:00 AM to 9:00 PM. Sunday: 10:00 AM to 2:00 PM (OPD only).
+Phone: 0937-000000 (demo number). Walk-in patients are welcome, but booked appointments are seen first.
+
+DOCTORS AND TIMINGS
+Dr. Ahmed Raza - General Physician - Monday to Saturday, 9:00 AM to 2:00 PM.
+Dr. Fatima Noor - Gynecologist - Monday, Wednesday, Friday, 4:00 PM to 8:00 PM.
+Dr. Bilal Hussain - Pediatrician (children's specialist) - Tuesday, Thursday, Saturday, 5:00 PM to 9:00 PM.
+Dr. Sara Iqbal - Dermatologist (skin specialist) - Monday to Friday, 3:00 PM to 6:00 PM.
+
+CONSULTATION FEES
+General Physician consultation fee: Rs 800.
+Gynecologist consultation fee: Rs 1,500.
+Pediatrician consultation fee: Rs 1,000.
+Dermatologist consultation fee: Rs 1,200.
+Follow-up visit within 7 days of the first consultation: Rs 400 for all doctors.
+Emergency consultation outside regular hours: Rs 2,000.
+
+SERVICES AND PRICES
+Complete Blood Count (CBC) test: Rs 600.
+Blood sugar (fasting) test: Rs 250.
+Lipid profile: Rs 1,800.
+Liver function test (LFT): Rs 1,500.
+Urine routine examination: Rs 400.
+ECG: Rs 500.
+Ultrasound (abdomen): Rs 2,200.
+X-Ray (single view): Rs 900.
+Dental cleaning and polishing: Rs 2,500.
+Nebulization: Rs 300 per session.
+IV drip administration: Rs 800 (medicine charged separately).
+
+TEST PREPARATION
+Fasting blood sugar and lipid profile tests require 8 to 10 hours of fasting. Water is allowed.
+Ultrasound of the abdomen requires 6 hours of fasting. For a pelvic ultrasound, drink water and do not pass urine before the scan.
+Lab reports are ready within 24 hours and can be collected from the reception or sent on WhatsApp.
+
+APPOINTMENTS AND POLICIES
+Appointments can be booked at the reception, by phone, or through the website chat.
+Please arrive 10 minutes before your appointment time.
+To cancel or reschedule, inform the clinic at least 2 hours before your appointment.
+Payment methods accepted: cash, Easypaisa, and JazzCash. Card payments are not accepted yet.
+Home visit by a doctor is available within Mardan city for Rs 3,000, subject to doctor availability.
+
+FREQUENTLY ASKED QUESTIONS
+Is parking available? Yes, free parking is available in front of the clinic.
+Do you have a female doctor? Yes, Dr. Fatima Noor (Gynecologist) and Dr. Sara Iqbal (Dermatologist) are available at the timings listed above.
+Can I get my report on WhatsApp? Yes, lab reports can be sent on WhatsApp once ready.
+Do you offer discounts? Senior citizens above 60 years get 10 percent off on lab tests.
+
+IMPORTANT NOTE
+This chatbot answers questions about clinic services, prices, timings, and policies only. It does not provide medical advice or diagnosis. In an emergency, call 1122 or go to the nearest hospital.
