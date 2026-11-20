@@ -139,3 +139,14 @@ input[type="color"] { width: 52px; height: 36px; border: 1px solid #cfd6e1; bord
   .main { padding: 18px 14px 50px; }
   .row2, .row3 { grid-template-columns: 1fr; }
 }
+
+/* Password gate lock screen */
+.rf-lock-overlay { position: fixed; inset: 0; z-index: 9999; background: #0b1220; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.rf-lock-card { background: #ffffff; border-radius: 14px; padding: 28px 26px; max-width: 360px; width: 100%; box-shadow: 0 18px 50px rgba(0,0,0,.45); text-align: center; }
+.rf-lock-card h2 { margin: 0 0 6px; font-size: 22px; color: #0b1220; }
+.rf-lock-card p { margin: 0 0 14px; color: #475569; font-size: 14px; }
+.rf-lock-card input { width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 9px; font-size: 15px; margin-bottom: 10px; }
+.rf-lock-card button { width: 100%; padding: 11px 12px; border: none; border-radius: 9px; background: #0f766e; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+.rf-lock-card button:hover { filter: brightness(1.08); }
+.rf-lock-err { color: #b91c1c !important; }
+.rf-lock-msg { min-height: 18px; margin: 10px 0 0 !important; font-size: 13px !important; }

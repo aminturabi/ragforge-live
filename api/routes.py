@@ -1,5 +1,6 @@
 """HTTP route handlers."""
 
+import hmac
 import os
 import uuid
 
@@ -13,6 +14,25 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 def _service():
     return current_app.config["RAG_SERVICE"]
+
+
+def _admin_key_required() -> bool:
+    """True when the server has an ADMIN_KEY configured."""
+    return bool(os.environ.get("ADMIN_KEY"))
+
+
+def _admin_key_ok() -> bool:
+    """True when no ADMIN_KEY is configured, or the request carries it.
+
+    The key travels in the X-Admin-Key header. While ADMIN_KEY is unset the
+    API stays open (backwards compatible); once it is set in the server
+    environment, destructive endpoints demand it.
+    """
+    expected = os.environ.get("ADMIN_KEY")
+    if not expected:
+        return True
+    provided = request.headers.get("X-Admin-Key", "")
+    return hmac.compare_digest(provided, expected)
 
 
 @api_bp.route("/config", methods=["GET"])
@@ -88,8 +108,24 @@ def list_collections():
         return jsonify({"success": False, "error": str(error)}), 500
 
 
+@api_bp.route("/admin-status", methods=["GET"])
+def admin_status():
+    """Tell admin clients whether this server is password-protected."""
+    return jsonify({"success": True, "protected": _admin_key_required()})
+
+
+@api_bp.route("/admin-verify", methods=["POST"])
+def admin_verify():
+    """Check an X-Admin-Key header against the configured ADMIN_KEY."""
+    if _admin_key_ok():
+        return jsonify({"success": True})
+    return jsonify({"success": False, "error": "Incorrect admin key"}), 401
+
+
 @api_bp.route("/clear", methods=["POST"])
 def clear_collection():
+    if not _admin_key_ok():
+        return jsonify({"success": False, "error": "Admin key required to delete a collection"}), 401
     data = request.json or {}
     collection_name = data.get("collection_name", "")
     if not collection_name:

@@ -227,13 +227,78 @@
    * 3. API client - the existing RAGForge backend, unchanged
    * ================================================================ */
 
+  /* Admin password gate. The key is stored separately from dashboard state
+     (never inside backups) and sent as an X-Admin-Key header. The SERVER
+     decides whether a key is required (ADMIN_KEY env var); while it is not
+     set, everything stays open. Deleting collections is enforced server-side. */
+  var ADMIN_KEY_STORAGE = "rf_admin_key_v1";
+
+  function storedAdminKey() {
+    try { return localStorage.getItem(ADMIN_KEY_STORAGE) || ""; } catch (e) { return ""; }
+  }
+
   function apiFetch(path, options) {
+    options = options || {};
+    var key = storedAdminKey();
+    if (key) {
+      options.headers = options.headers || {};
+      options.headers["X-Admin-Key"] = key;
+    }
     return fetch(apiBase() + path, options).then(function (res) {
       return res.text().then(function (body) {
         try { return JSON.parse(body); }
         catch (e) { throw new Error("The backend returned an unreadable response (HTTP " + res.status + ")."); }
       });
     });
+  }
+
+  function showLock(message) {
+    return new Promise(function (resolve) {
+      var overlay = document.createElement("div");
+      overlay.className = "rf-lock-overlay";
+      overlay.innerHTML = '<div class="rf-lock-card">' +
+        "<h2>RAGForge Admin</h2>" +
+        "<p>This dashboard is password-protected.</p>" +
+        (message ? '<p class="rf-lock-err">' + esc(message) + "</p>" : "") +
+        '<input type="password" id="rfLockInput" placeholder="Admin password" autocomplete="current-password">' +
+        '<button type="button" id="rfLockBtn">Unlock</button>' +
+        '<p class="rf-lock-msg" id="rfLockMsg"></p>' +
+        "</div>";
+      document.body.appendChild(overlay);
+      var input = overlay.querySelector("#rfLockInput");
+      var msg = overlay.querySelector("#rfLockMsg");
+      function attempt() {
+        var val = input.value;
+        if (!val) { msg.textContent = "Enter the password."; return; }
+        msg.textContent = "Checking...";
+        fetch(apiBase() + "/api/admin-verify", { method: "POST", headers: { "X-Admin-Key": val } })
+          .then(function (r) {
+            if (r.ok) {
+              try { localStorage.setItem(ADMIN_KEY_STORAGE, val); } catch (e) {}
+              overlay.remove();
+              resolve(true);
+            } else { msg.textContent = "Incorrect password. Try again."; }
+          })
+          .catch(function () { msg.textContent = "Could not reach the server. Try again."; });
+      }
+      overlay.querySelector("#rfLockBtn").addEventListener("click", attempt);
+      input.addEventListener("keydown", function (e) { if (e.key === "Enter") attempt(); });
+      input.focus();
+    });
+  }
+
+  function adminGate() {
+    return fetch(apiBase() + "/api/admin-status")
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data || !data.protected) return true;
+        var key = storedAdminKey();
+        if (!key) return showLock();
+        return fetch(apiBase() + "/api/admin-verify", { method: "POST", headers: { "X-Admin-Key": key } })
+          .then(function (r) { return r.ok ? true : showLock("Your saved password is no longer valid. Enter the admin password."); })
+          .catch(function () { return showLock(); });
+      })
+      .catch(function () { return true; }); /* status unreachable: proceed; the server still enforces deletes */
   }
 
   var api = {
@@ -565,6 +630,9 @@
       '<p class="hint">All dashboard data (FAQs, business info, appearance, logs) lives in this browser. Export a backup before switching browsers or clearing site data.</p>' +
       '<div class="btn-row"><button class="btn ghost" id="exportBtn">Export JSON backup</button>' +
       '<label class="btn ghost" style="margin:0;cursor:pointer">Import backup<input type="file" id="importFile" accept=".json" style="display:none"></label></div></div>' +
+      '<div class="card"><h3>Password protection</h3>' +
+      '<p class="hint">When the server has an admin password set (ADMIN_KEY), this dashboard opens with a lock screen and deleting knowledge bases requires the password - enforced by the server itself. Your password is remembered only in this browser.</p>' +
+      '<div class="btn-row"><button class="btn ghost" id="lockNowBtn">Lock dashboard now</button></div></div>' +
       '<div class="card"><h3>Danger zone</h3>' +
       '<div class="btn-row"><button class="btn danger" id="wipeBtn">Erase all dashboard data</button></div></div>';
   }
@@ -912,6 +980,10 @@
         } catch (err) { alert("That file is not a valid backup."); }
       });
     });
+    document.getElementById("lockNowBtn").addEventListener("click", function () {
+      try { localStorage.removeItem(ADMIN_KEY_STORAGE); } catch (e) {}
+      location.reload();
+    });
     document.getElementById("wipeBtn").addEventListener("click", function () {
       if (!confirm("Erase ALL dashboard data in this browser? Backend collections are not deleted.")) return;
       try { global.localStorage.removeItem(STORAGE_KEY); } catch (e) {}
@@ -1023,8 +1095,10 @@
     document.querySelectorAll(".nav button").forEach(function (b) {
       b.addEventListener("click", function () { navigate(b.getAttribute("data-nav")); });
     });
-    checkBackend();
-    navigate("overview");
+    adminGate().then(function () {
+      checkBackend();
+      navigate("overview");
+    });
   }
 
   if (typeof document !== "undefined") {
