@@ -14,3 +14,10 @@ create table if not exists public.rf_chunks (
 
 create index if not exists rf_chunks_collection_idx
   on public.rf_chunks (collection_name);
+
+-- Newer Supabase projects do not auto-grant table access to the API
+-- roles. Without this grant the backend gets "permission denied for
+-- table rf_chunks" (SQLSTATE 42501). The service_role key used by the
+-- backend bypasses row-level security, but it still needs these
+-- table privileges.
+grant select, insert, update, delete on public.rf_chunks to service_role;

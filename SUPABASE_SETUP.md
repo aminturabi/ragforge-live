@@ -16,7 +16,10 @@ variables appear. Only the account owner can do these steps.
 
 1. In the project, open **SQL Editor** > **New query**.
 2. Paste the full contents of `supabase_schema.sql` (repository root)
-   and tap **Run**. It should say "Success. No rows returned".
+   and tap **Run**. It should say "Success. No rows returned". The
+   script also grants the backend's `service_role` access to the
+   table - newer Supabase projects need that grant, or uploads
+   fail with "permission denied for table rf_chunks".
 
 ## 3. Copy the two values
 
