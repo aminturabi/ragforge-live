@@ -2,7 +2,10 @@
 
 import os
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = lambda: None
 from flask import Flask
 from flask_cors import CORS
 
@@ -19,6 +22,7 @@ def create_app() -> Flask:
     CORS(app)
 
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB maximum upload limit
     app.config["UPLOAD_FOLDER"] = os.path.join(root_dir, "uploads")
     app.config["RAG_SERVICE"] = build_service()
 

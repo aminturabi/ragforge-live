@@ -27,11 +27,12 @@ class YouTubeTranscriptLoader(DocumentLoader):
     def load(self, source: str) -> str:
         video_id = self.extract_video_id(source)
         if not YOUTUBE_API_AVAILABLE:
-            # Fallback when library is not installed
-            return f"Sample YouTube Transcript for video ID [{video_id}]: Introduction to Modular RAG Architectures, Vector Stores, and LLM Retrievability."
+            raise DocumentLoadError(
+                "youtube-transcript-api is not installed. Run `pip install youtube-transcript-api` to process YouTube URLs."
+            )
 
         try:
             transcript = YouTubeTranscriptApi.get_transcript(video_id)
             return " ".join([item.get("text", "") for item in transcript])
         except Exception as err:
-            raise DocumentLoadError(f"Could not retrieve transcript for YouTube video {video_id}: {err}")
+            raise DocumentLoadError(f"Could not retrieve transcript for YouTube video {video_id}: {err}") from err

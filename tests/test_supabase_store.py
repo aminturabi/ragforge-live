@@ -52,12 +52,31 @@ def test_query_ranks_by_cosine_similarity():
     store = FakeStore({"GET": rows})
     results = store.query("col_a", [[1.0, 0.0]], n_results=2)
     assert results == ["exact", "diagonal"]
-    assert "collection_name=eq.col_a" in store.calls[0]["path"]
+    get_calls = [c for c in store.calls if c["method"] == "GET"]
+    assert len(get_calls) == 1
+    assert "collection_name=eq.col_a" in get_calls[0]["path"]
 
 
 def test_query_unknown_collection_returns_empty():
     store = FakeStore({"GET": []})
     assert store.query("col_missing", [[1.0, 0.0]]) == []
+
+
+def test_query_uses_pgvector_rpc_when_available():
+    rpc_results = [
+        {"chunk_id": "c1", "content": "pgvector result 1", "similarity": 0.95},
+        {"chunk_id": "c2", "content": "pgvector result 2", "similarity": 0.88},
+    ]
+    store = FakeStore({"POST": rpc_results})
+    results = store.query("col_a", [[1.0, 0.0]], n_results=2)
+    assert results == ["pgvector result 1", "pgvector result 2"]
+    rpc_call = [c for c in store.calls if c["path"] == "/rpc/match_rf_chunks"]
+    assert len(rpc_call) == 1
+    assert rpc_call[0]["body"] == {
+        "query_embedding": [1.0, 0.0],
+        "match_collection": "col_a",
+        "match_count": 2,
+    }
 
 
 def test_delete_collection_reports_whether_rows_existed():

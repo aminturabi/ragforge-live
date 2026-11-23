@@ -72,7 +72,14 @@ class RAGService:
             "chunks_count": len(chunks),
         }
 
-    def query(self, collection_name: str, query: str, top_k: int = 4, api_key: str | None = None) -> dict:
+    def query(
+        self,
+        collection_name: str,
+        query: str,
+        top_k: int = 4,
+        api_key: str | None = None,
+        history: list[dict] | None = None,
+    ) -> dict:
         candidates = self.retriever.retrieve(collection_name=collection_name, query=query, top_k=top_k)
         if not candidates:
             return self.formatter.format(
@@ -80,7 +87,12 @@ class RAGService:
             )
 
         reranked = self.reranker.rerank(query=query, candidates=candidates, top_k=top_k)
-        answer = self.llm.generate(question=query, context_chunks=reranked, api_key=api_key)
+        try:
+            answer = self.llm.generate(
+                question=query, context_chunks=reranked, api_key=api_key, history=history
+            )
+        except TypeError:
+            answer = self.llm.generate(question=query, context_chunks=reranked, api_key=api_key)
         return self.formatter.format(answer, reranked)
 
     def list_collections(self) -> list[str]:

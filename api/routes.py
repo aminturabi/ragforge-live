@@ -2,6 +2,7 @@
 
 import hmac
 import os
+import re
 import uuid
 
 from flask import Blueprint, current_app, jsonify, request
@@ -10,6 +11,7 @@ from core.exceptions import DocumentLoadError
 from core.registry import list_all_plugins
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
+COLLECTION_NAME_REGEX = re.compile(r"^[a-zA-Z0-9_-]+$")
 
 
 def _service():
@@ -22,15 +24,14 @@ def _admin_key_required() -> bool:
 
 
 def _admin_key_ok() -> bool:
-    """True when no ADMIN_KEY is configured, or the request carries it.
+    """True only when ADMIN_KEY is configured in the environment AND the request carries it.
 
-    The key travels in the X-Admin-Key header. While ADMIN_KEY is unset the
-    API stays open (backwards compatible); once it is set in the server
-    environment, destructive endpoints demand it.
+    Fails secure: if ADMIN_KEY is unset, all destructive actions are blocked.
     """
     expected = os.environ.get("ADMIN_KEY")
     if not expected:
-        return True
+        current_app.logger.warning("Admin authentication rejected: ADMIN_KEY is not configured in the environment.")
+        return False
     provided = request.headers.get("X-Admin-Key", "")
     return hmac.compare_digest(provided, expected)
 
@@ -77,12 +78,22 @@ def query_collection():
     query = data.get("query", "")
     collection_name = data.get("collection_name", "")
     api_key_override = data.get("api_key", "").strip()
-    top_k = int(data.get("top_k", 4))
+    history = data.get("history")
+    if not isinstance(history, list):
+        history = None
+    
+    raw_top_k = data.get("top_k", 4)
+    try:
+        top_k = max(1, min(int(raw_top_k), 10))
+    except (ValueError, TypeError):
+        top_k = 4
 
     if not query.strip():
         return jsonify({"success": False, "error": "Query is required"}), 400
     if not collection_name.strip():
         return jsonify({"success": False, "error": "Collection name is required (upload a document first)"}), 400
+    if not COLLECTION_NAME_REGEX.match(collection_name.strip()):
+        return jsonify({"success": False, "error": "Invalid collection name format. Only alphanumeric characters, dashes, and underscores are allowed."}), 400
 
     if not api_key_override and not os.environ.get("GROQ_API_KEY"):
         return jsonify(
@@ -93,7 +104,13 @@ def query_collection():
         ), 400
 
     try:
-        payload = _service().query(collection_name=collection_name, query=query, top_k=top_k, api_key=api_key_override)
+        payload = _service().query(
+            collection_name=collection_name,
+            query=query,
+            top_k=top_k,
+            api_key=api_key_override,
+            history=history,
+        )
         return jsonify({"success": True, **payload})
     except Exception as error:
         current_app.logger.exception("Error querying collection")
@@ -128,9 +145,11 @@ def clear_collection():
     if not _admin_key_ok():
         return jsonify({"success": False, "error": "Admin key required to delete a collection"}), 401
     data = request.json or {}
-    collection_name = data.get("collection_name", "")
+    collection_name = data.get("collection_name", "").strip()
     if not collection_name:
         return jsonify({"success": False, "error": "Collection name is required"}), 400
+    if not COLLECTION_NAME_REGEX.match(collection_name):
+        return jsonify({"success": False, "error": "Invalid collection name format."}), 400
     try:
         success = _service().clear_collection(collection_name)
         if success:

@@ -8,6 +8,13 @@ def rag_advanced(
     context_chunks: list[str],
     api_key: str | None = None,
     model_name: str = "llama-3.3-70b-versatile",
+    history: list[dict] | None = None,
 ) -> str:
     provider = GroqLLMProvider(model_name=model_name, api_key=api_key)
-    return provider.generate(question=question, context_chunks=context_chunks, model_name=model_name, api_key=api_key)
+    return provider.generate(
+        question=question,
+        context_chunks=context_chunks,
+        model_name=model_name,
+        api_key=api_key,
+        history=history,
+    )

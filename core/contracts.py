@@ -69,8 +69,9 @@ class LLMProvider(ABC):
         context_chunks: list[str],
         model_name: str | None = None,
         api_key: str | None = None,
+        history: list[dict] | None = None,
     ) -> str:
-        """Generate answer from question and context."""
+        """Generate answer from question, context, and optional conversation history."""
 
 
 class OutputFormatter(ABC):

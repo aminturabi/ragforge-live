@@ -95,6 +95,21 @@ class SupabaseVectorStore(VectorStoreBackend):
     def query(self, collection_name: str, query_embeddings: list[list[float]], n_results: int = 4) -> list[str]:
         if not query_embeddings:
             return []
+
+        # 1. Preferred fast path: server-side pgvector similarity search via stored procedure
+        try:
+            payload = {
+                "query_embedding": query_embeddings[0],
+                "match_collection": collection_name,
+                "match_count": n_results,
+            }
+            results = self._request("POST", "/rpc/match_rf_chunks", body=payload)
+            if results is not None and isinstance(results, list):
+                return [row["content"] for row in results if "content" in row]
+        except Exception:
+            pass
+
+        # 2. Fallback path: REST query for backward compatibility with unmigrated schemas
         rows = self._request("GET", f"/{TABLE}?{self._filter(collection_name)}&select=content,embedding") or []
         if not rows:
             return []

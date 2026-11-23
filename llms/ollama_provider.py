@@ -22,14 +22,38 @@ class OllamaLLMProvider(LLMProvider):
         context_chunks: list[str],
         model_name: str | None = None,
         api_key: str | None = None,
+        history: list[dict] | None = None,
     ) -> str:
         selected_model = model_name or self.model_name
         context = "\n\n---\n\n".join(context_chunks)
+        
         system_prompt = (
-            "You are a helpful assistant that answers questions using ONLY the provided context. "
-            "If the answer is not in the context, say you do not know based on the document."
+            "You are the official AI Assistant for Amin Khan's portfolio and RAGForge technologies. "
+            "Answer using ONLY the provided context. If the answer is not in the context, say you do not know "
+            "and suggest contacting Amin at aminkhanazikhail@gmail.com."
         )
-        prompt = f"{system_prompt}\n\nContext:\n{context}\n\nQuestion: {question}\n\nAnswer:"
+
+        history_lines = []
+        if history:
+            for turn in history[-6:]:
+                if isinstance(turn, dict):
+                    role = "Assistant" if turn.get("role") in ("assistant", "bot") else "User"
+                    history_lines.append(f"{role}: {turn.get('text', '')}")
+
+        history_text = "\n".join(history_lines)
+        if history_text:
+            prompt = (
+                f"{system_prompt}\n\n"
+                f"<context>\n{context}\n</context>\n\n"
+                f"Conversation History:\n{history_text}\n\n"
+                f"<user_question>\n{question}\n</user_question>\n\nAnswer:"
+            )
+        else:
+            prompt = (
+                f"{system_prompt}\n\n"
+                f"<context>\n{context}\n</context>\n\n"
+                f"<user_question>\n{question}\n</user_question>\n\nAnswer:"
+            )
 
         payload = {
             "model": selected_model,

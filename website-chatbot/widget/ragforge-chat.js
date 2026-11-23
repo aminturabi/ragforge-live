@@ -92,11 +92,9 @@
 
   function buildQueryPayload(cfg, question, history) {
     return {
-      query: cfg.contextFollowUps ? expandFollowUp(question, history) : String(question || ""),
+      query: String(question || "").trim(),
       collection_name: cfg.collection,
       top_k: cfg.topK,
-      // Sent for future server-side context support; the current backend
-      // safely ignores unknown fields.
       history: (history || []).slice(-10).map(function (m) {
         return { role: m.role, text: m.text };
       })
